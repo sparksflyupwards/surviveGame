@@ -28,7 +28,7 @@ BasicGame.Game = function (game) {
 var platformStarts = [0, 524];
 var platformSpeeds = [-40, -40, -40, -40];
 var platformWidths = [500, 500];
-var platforms, acceleratePlatforms;
+var platforms, acceleratePlatforms, jumpPlatforms;
 //stars 
 var stars;
 //more sprites
@@ -47,21 +47,24 @@ var isDesktop;
 var gameRef;
 var lives = 3;
 var xpTimer =0, xpTime =800;
-var platformTimer=0 , platformTime = 7000;
+var platformTimer=0 , platformTime = 3000;
 var score = 0, scoreRate = 1;
 
 
 function acceleratePlayer (player, platform){
  
-        player.body.acceleration.x = 0.5;
+   player.body.acceleration.x += 10;
+}
+function playerJump (player, platform){
+        player.body.velocity.y += -200;
+       
 
 }
-
-var newPlatform = function (player, platforms,gameRef){
+var newPlatform = function (player, platformGroupRef,gameRef){
     var posX = platformStarts[Math.floor(Math.random() * platformStarts.length)]
     var posY = gameRef.height-90;
    
-    var ledge = platforms.create(posX, posY, 'plate');
+    var ledge = platformGroupRef.create(posX, posY, 'plate');
     ledge.body.immovable = true;
     ledge.width = platformWidths[Math.floor(Math.random() *platformWidths.length)];
     ledge.body.velocity.y = platformSpeeds[Math.floor(Math.random() * platformSpeeds.length)];
@@ -81,9 +84,8 @@ var newPlatform = function (player, platforms,gameRef){
  
 }
 
-function destroyPlatform (platform, bar){
-
-    platform.kill();
+function destroyPlatform (platformRef, bar){
+    platformRef.kill();
  
 }
 
@@ -105,10 +107,6 @@ function loseLife(player, spike){
 
 }
 
-function drawHearts(player, spike){
-    console.log(heart1.kill());
-  
-}
 
 function collectStar (player, star){
         
@@ -131,11 +129,14 @@ BasicGame.Game.prototype = {
         var skyS = this.add.sprite(0, 0, 'sky');
         skyS.body.immovable = true;
     
-    // The platforms group contains the ground and the 2 ledges we can jump on
+
     
     spikeBars = this.add.group();
     platforms = this.add.group();
-    //acceleratePlatforms = this.add.group(); 
+    acceleratePlatforms = this.add.group(); 
+    jumpPlatforms = this.add.group(); 
+
+
     var botBar = spikeBars.create(0, this.world.height - 32, 'spikesbot');
     botBar.scale.setTo(2,2);
     botBar.body.immovable = true;
@@ -232,7 +233,14 @@ BasicGame.Game.prototype = {
     if(this.time.now>platformTimer){
     timeText.content = player.body.velocity.x + "   "+player.body.velocity.y;
     platformTimer = this.time.now + platformTime;
-    newPlatform(player, platforms, gameRef);
+    switch (Math.floor(Math.random()*3.99)){
+   case 0: newPlatform(player, acceleratePlatforms, gameRef);
+    break;
+   case 1: newPlatform(player, jumpPlatforms, gameRef); 
+   break;
+   case 2: newPlatform(player, platforms, gameRef); 
+   break;
+    }
     }
 
    
@@ -241,12 +249,22 @@ BasicGame.Game.prototype = {
         
     // collide settings
     this.physics.collide(player, platforms);
+    this.physics.collide(player, jumpPlatforms);
+    this.physics.collide(player, acceleratePlatforms);
     this.physics.collide(stars, platforms);
-    this.physics.collide(player, platforms, acceleratePlayer, null, gameRef);
+    this.physics.collide(stars, jumpPlatforms);
+    this.physics.collide(stars, acceleratePlatforms);
+    this.physics.collide(player, jumpPlatforms, playerJump, null, gameRef);
+    this.physics.collide(player, acceleratePlatforms, acceleratePlayer, null, gameRef);
    
     // overlap settings
     this.physics.overlap(player, stars, collectStar, null, this);
     this.physics.overlap(platforms, spikeBars, destroyPlatform, null, gameRef);
+
+
+   // this.physics.overlap(jumpPlatforms, spikeBars, destroyPlatform, null, gameRef);
+  
+   // this.physics.overlap(acceleratePlatforms, spikeBars, destroyPlatform, null, gameRef);
     this.physics.overlap(player, spikeBars, loseLife, null, gameRef);
 
 
@@ -297,8 +315,7 @@ else {
     {
         // Stand still
         player.animations.stop();
-        player.body.velocity.x = 0
-        //Math.abs(player.body.velocity.x)-150;
+        player.body.velocity.x = Math.abs(player.body.velocity.x)-150;
         player.frame = 4;
     }
 
