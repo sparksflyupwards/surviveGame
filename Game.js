@@ -21,87 +21,121 @@ BasicGame.Game = function (game) {
 
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-
-var platformStarts = [0, 100, 200, 400, 600, 800, 900];
-// game = this;
-
-
-
-
 };
-var player;
-var platforms;
-var cursors;
-var rocket;
+
+
+//platform variables
+var platformStarts = [0, 524];
+var platformSpeeds = [-40, -40, -40, -40];
+var platformWidths = [500, 500];
+var platforms, acceleratePlatforms;
+//stars 
 var stars;
-var score = 0;
+//more sprites
+var hearts;
+var player;
+var heart1, heart2, heart3;
+var spikeBars;
+//input
+var cursors;
+//text variables
 var scoreText;
 var timeText;
-var spikeBars;
-var platformWidths = [200,200, 200, 200];
-//[-40, -80, -50, -100];
-var platformSpeeds = [-40, -40, -40, -60];
-var platformStarts = [0, 100, 200, 400, 600, 800, 900];
-function collectStar (player, star){
-        
-    // Removes the star from the screen
-    star.kill();
+var livesText;
+//game data
+var isDesktop;
+var gameRef;
+var lives = 3;
+var xpTimer =0, xpTime =800;
+var platformTimer=0 , platformTime = 7000;
+var score = 0, scoreRate = 1;
 
-    // Add and update the score
-    score += 10;
-    scoreText.content = 'Score: ' + score;
+
+function acceleratePlayer (player, platform){
+ 
+        player.body.acceleration.x = 0.5;
+
 }
-function newPlatform (platform, bar){
 
-    platform.kill();
-
-    var posX = platformStarts[Math.floor(Math.random() * platformStarts.length)];
-    var posY = this.height-90;
-
-   // alert(posY);
-  // platforms.create(posX, posY, 'plate');
-   //
-    //var ledge = platforms.create(posX, posY, 'plate');
-    /**
-    ledge.body.immovable = true;
-   // alert("width:"+ Math.floor(Math.random() *platformWidths.length)+" speed:"+Math.floor(Math.random() * platformSpeeds.length))
-     
-    ledge.width = platformWidths[Math.floor(Math.random() *platformWidths.length)];
+var newPlatform = function (player, platforms,gameRef){
+    var posX = platformStarts[Math.floor(Math.random() * platformStarts.length)]
+    var posY = gameRef.height-90;
    
+    var ledge = platforms.create(posX, posY, 'plate');
+    ledge.body.immovable = true;
+    ledge.width = platformWidths[Math.floor(Math.random() *platformWidths.length)];
     ledge.body.velocity.y = platformSpeeds[Math.floor(Math.random() * platformSpeeds.length)];
     
+    
     var numStars = Math.floor(Math.random()*4+1);
-   
      for (var i = 0; i < numStars ; i++)
     {
-        // Create a star inside of the 'stars' group
-        //var star = stars.create( ledge.width/i+ledge.x, ledge.height+50, 'star');
-        //ledge.width/(i+1) +posX
-        //posY+star.height
+       
         var star = stars.create(0,0, 'star');
         star.body.x = (ledge.width/numStars*i +posX);
         star.body.y = (posY-star.height-10);
-        // Let gravity do its thing
         star.body.gravity.y = 6;
-
-        // This just gives each star a slightly random bounce value
         star.body.bounce.y = 0.7 + Math.random() * 0.2;
-
-      // timeText.content = (ledge.width/(i+1) +posX) + " " + (posY+star.height);
-
-        timeText.content = (ledge.width/(i+1) +posX-ledge.width)+ " "+ (posY+star.height);
     }
- */
+
+ 
 }
+
+function destroyPlatform (platform, bar){
+
+    platform.kill();
+ 
+}
+
+
+ 
+function loseLife(player, spike){
+    lives --;
+
+    if (lives <0){
+        BasicGame.Game.prototype.quitGame(this);
+    }
+    else{
+       console.log(hearts.getAt((lives)).kill()); 
+    }
+
+    livesText.content = "Lives: " + lives;
+    BasicGame.Game.prototype.restartGame(this);
+  
+
+}
+
+function drawHearts(player, spike){
+    console.log(heart1.kill());
+  
+}
+
+function collectStar (player, star){
+        
+    star.kill();
+
+    score += 10;
+    scoreText.content = 'Score: ' + score;
+}
+
 BasicGame.Game.prototype = {
+    
 	create: function () {
+    isDesktop = this.game.device.desktop;
+    platformTimer = this.time.now+platformTime;
+    xpTimer = this.time.now+xpTime;
+       
+    
+        gameRef = this.game;
         // A simple background for our game
-    this.add.sprite(0, 0, 'sky');
+        var skyS = this.add.sprite(0, 0, 'sky');
+        skyS.body.immovable = true;
     
     // The platforms group contains the ground and the 2 ledges we can jump on
-    platforms = this.add.group();
-   
+    
     spikeBars = this.add.group();
+    platforms = this.add.group();
+    //acceleratePlatforms = this.add.group(); 
     var botBar = spikeBars.create(0, this.world.height - 32, 'spikesbot');
     botBar.scale.setTo(2,2);
     botBar.body.immovable = true;
@@ -110,15 +144,12 @@ BasicGame.Game.prototype = {
     topBar.body.immovable = true;
     
 
-    // Here we create the ground.
+    // Create the ground the player stands on.
     var ground = platforms.create(0, this.world.height - 64, 'plate');
-
-    // Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    //ground.scale.setTo(2, 2);
     ground.body.immovable = true;
-
     ground.body.velocity.y = -80;
-   // ground.play('disapear', 3, false, true);
+
+
     // Now let's create two ledges
     var ledge = platforms.create(400, 400, 'plate');
     ledge.body.immovable = true;
@@ -127,124 +158,180 @@ BasicGame.Game.prototype = {
     ledge = platforms.create(-150, 250, 'plate');
     ledge.body.immovable = true;
     ledge.body.velocity.y = -80;
+   
     // The player and its settings
     player = this.add.sprite(32, this.world.height - 150, 'dude');
-
-    // Player physics properties. Give the little guy a slight bounce.
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 6;
-   // player.body.collideWorldBounds = true;
-     // Our two animations, walking left and right.
+
+    player.body.collideWorldBounds = true;
+    //animations, walking left and right.
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-    // Finally some stars to collect
+    
+    //hearts and their settings
+    hearts = this.add.group();
+    heart1 = hearts.create (16+32, 150, '<3');
+    heart1.width = 32;
+    heart1.height = 32;
+    heart1.immovable = true;
+
+    heart2 = hearts.create (16+32*2, 150, '<3');
+    heart2.width = 32;
+    heart2.height = 32;
+    heart2.immovable = true;
+
+    heart3 = hearts.create (16+32*3, 150, '<3');
+    heart3.width = 32;
+    heart3.height = 32;
+    heart3.immovable = true;
+    
+
+
+    // Starting stars
     stars = this.add.group();
 
-    // Here we'll create 12 of them evenly spaced apart
+    
     for (var i = 0; i < 12; i++)
     {
-        // Create a star inside of the 'stars' group
         var star = stars.create(i * 70, 0, 'star');
-
-        // Let gravity do its thing
         star.body.gravity.y = 6;
-
-        // This just gives each star a slightly random bounce value
         star.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
 
-    // The score
+    
+    // The text variables
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
     timeText = this.add.text(16, 100, 'time: 0', { fontSize: '32px', fill: '#000' });
+    livesText = this.add.text(16, 150, 'lives:' +lives, { fontSize: '32px', fill: '#000' });
+ 
+
     // Our controls.
-    cursors = this.input.keyboard.createCursorKeys();
-
-
-		//	Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+           if(isDesktop){
+            cursors = this.input.keyboard.createCursorKeys();
+            }
+            else{
+                aler("ok");
+            cursors = this.input.pointer1;
+        }
 
 	},
 
 	update: function () {
-		// game.stage.scale.startFullScreen();
-   // var timeCheck = new Device();
-        //timeText.content = 'time: ' + 2;
-    // Collide the player and the stars with the platforms
+   
+   // experience counting
+   if(this.time.now>=xpTimer){
+    scoreRate +=0.1;
+    score +=50*scoreRate;
+    scoreText.content = 'Score: ' + score;
+    xpTimer = this.time.now + xpTime;
+   }
+    
+    //platform making
+    if(this.time.now>platformTimer){
+    timeText.content = player.body.velocity.x + "   "+player.body.velocity.y;
+    platformTimer = this.time.now + platformTime;
+    newPlatform(player, platforms, gameRef);
+    }
+
+   
+	
+
+        
+    // collide settings
     this.physics.collide(player, platforms);
     this.physics.collide(stars, platforms);
-    //game.physics.collide(rocket, platforms);
-   // game.physics.collide(stars, rocket);
-    // Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+    this.physics.collide(player, platforms, acceleratePlayer, null, gameRef);
+   
+    // overlap settings
     this.physics.overlap(player, stars, collectStar, null, this);
-   // game.physics.collide(player, rocket);
-   // this.physics.overlap(platforms, spikeBars, newPlatform, null, this);
-    
+    this.physics.overlap(platforms, spikeBars, destroyPlatform, null, gameRef);
+    this.physics.overlap(player, spikeBars, loseLife, null, gameRef);
 
-/**
-if (game.input.onDown){
-game.stage.scale.startFullScreen();
-timeText.content = 'down';
-timeText.content = "DOWN";
-if(game.input.x < player.body.x){
-timeText.content = 'left';
-player.animations.play('left');
-player.body.velocity.x = -150;
-}
-else if (game.input.x >player.body.x ){
-timeText.content = 'right';
-player.animations.play('right');
-player.body.velocity.x = 150;
-}
-else{
-player.body.velocity.x = 0;
-}
-}
 
-*/
-    // Reset the players velocity (movement)
-    player.body.velocity.x = 0;
-   
-   
+  
+if(Math.abs(player.body.velocity.x)>=250){
+    console.log("trippy");
+        player.body.acceleration.x=0;
+    }
+       
+        
+if(!isDesktop){
+    // mobile inputs
 
+        if(cursors.pointer.isDown){
+
+            if(this.input.x < (player.body.x-10)){
+            timeText.content = 'left';
+            player.animations.play('left');
+            player.body.velocity.x += -150;
+            }
+            else if (this.input.x >(player.body.x +10)){
+            timeText.content = 'right';
+            player.animations.play('right');
+            player.body.velocity.x += 150;
+            }
+
+            else{
+            player.body.velocity.x =Math.abs(player.body.velocity.x)-150;
+            }
+        }
+}
+else {
+
+    // desktop inputs
     if (cursors.left.isDown)
     {
-        // Move to the left
-        player.body.velocity.x = -150;
-
+        //move left
+        player.body.acceleration.x -= 15;
         player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
-        // Move to the right
-        player.body.velocity.x = 150;
-
+        //move right
+        player.body.acceleration.x += 15;
         player.animations.play('right');
     }
     else
     {
         // Stand still
         player.animations.stop();
-
+        player.body.velocity.x = 0
+        //Math.abs(player.body.velocity.x)-150;
         player.frame = 4;
     }
-    /**
-// Allow the player to jump if they are touching the ground.
+
+
+
+}
+ 
+ //jump
 if (cursors.up.isDown && player.body.touching.down)
 {
-player.body.velocity.y = -350;
+player.body.velocity.y = -200;
 }
-*/
+   
+
 	},
 
-	quitGame: function (pointer) {
+	quitGame: function (gameRef) {
 
-		//	Here you should destroy anything you no longer need.
-		//	Stop music, delete sprites, purge caches, free resources, all that good stuff.
+        lives =3;
 
-		//	Then let's go back to the main menu.
-        
-		this.game.state.start('MainMenu');
+		gameRef.state.start('MainMenu');
 
-	}
+	},
+
+    restartGame: function (gameRef) {
+     player.body.x = 500;
+     player.body.y = 100;
+    }
+
+    
 
 };
+
+
+
+

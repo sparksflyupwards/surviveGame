@@ -24,14 +24,15 @@ BasicGame.Preloader.prototype = {
 		//	Here we load the rest of the assets our game needs.
 		//	As this is just a Project Template I've not provided these assets, swap them for your own.
  		
-        this.load.image('sky', 'assets/sky2.png');
+        this.load.image('sky', 'assets/sky.png');
 
-        this.load.image('rocket', 'assets/rocketship.png');
+        this.load.image('<3', 'assets/heart.png');
     	this.load.image('plate', 'assets/platform.png');
    	 	this.load.image('star', 'assets/star.png');
    		this.load.image('spikes', 'assets/spikes.png');
    		this.load.image('spikesbot', 'assets/spikesbot.png');
    	 	this.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+   	 	//this.load.spritesheet('dude', 'assets/playersheet.png');
    	 	this.load.spritesheet('ground', 'assets/ground.png', 1600, 32);
  		//, 'assets/play_button.json
    	 	this.load.image('playButton', 'assets/play.jpg');
