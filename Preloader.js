@@ -24,16 +24,23 @@ BasicGame.Preloader.prototype = {
 		//	Here we load the rest of the assets our game needs.
 		//	As this is just a Project Template I've not provided these assets, swap them for your own.
  		
-        this.load.image('sky', 'assets/sky.png');
-
+        this.load.image('sky', 'assets/backgroundKitchenReduced.png');
+        this.load.image('menuBack', 'assets/menuBackground.png');
+       // this.load.image('brick', 'assets/brick.png');
+        this.load.image('imageof1', 'assets/imageof1.png');
+        this.load.image('imageof2', 'assets/imageof2.png');
+        this.load.image('imageof3', 'assets/imageof3.png');
         this.load.image('<3', 'assets/heart.png');
-    	this.load.image('plate', 'assets/platform.png');
-   	 	this.load.image('star', 'assets/star.png');
+    	this.load.image('plate', 'assets/woodPlatformReduced.png');
+    	this.load.image('dropPlatform', 'assets/dropPlatform.png');
+    	//this.load.image('liftPlatform', 'assets/liftPlatform.png');
+   	 	this.load.image('squareCheese', 'assets/cheese.png');
+   	 	this.load.image('circleCheese', 'assets/circleCheese.png');
+   	 	this.load.image('triangleCheese', 'assets/triangleCheese.png');
    		this.load.image('spikes', 'assets/spikes.png');
    		this.load.image('spikesbot', 'assets/spikesbot.png');
-   	 	this.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+   	 	this.load.spritesheet('dude', 'assets/mouse.png', 32, 48);
    	 	//this.load.spritesheet('dude', 'assets/playersheet.png');
-   	 	this.load.spritesheet('ground', 'assets/ground.png', 1600, 32);
  		//, 'assets/play_button.json
    	 	this.load.image('playButton', 'assets/play.jpg');
 
@@ -45,6 +52,7 @@ BasicGame.Preloader.prototype = {
 		*/
 		//	+ lots of other required assets here
 
+	
 	},
 
 	create: function () {
@@ -55,6 +63,10 @@ BasicGame.Preloader.prototype = {
 	},
 
 	update: function () {
+		this.game.stage.scale.checkOrientationState();
+    
+
+	
 		//	You don't actually need to do this, but I find it gives a much smoother game experience.
 		//	Basically it will wait for our audio file to be decoded before proceeding to the MainMenu.
 		//	You can jump right into the menu if you want and still play the music, but you'll have a few
