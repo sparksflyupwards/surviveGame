@@ -10,19 +10,27 @@ BasicGame.Game = function (game) {
     this.input;		//	the global input manager (you can access this.input.keyboard, this.input.mouse, as well from it)
     this.load;		//	for preloading assets
     this.math;		//	lots of useful common math operations
-    this.sound;		//	the sound manager - add a sound, play one, set-up markers, etc
     this.stage;		//	the game stage
     this.time;		//	the clock
     this.tweens;	//	the tween manager
     this.world;		//	the game world
-    this.particles;	//	the particle manager
-    this.physics;	//	the physics manager
     this.rnd;		//	the repeatable random number generator
-    this.speedUpper = "lets talk";
+
+
+
+    this.totalScore =0;
     //	You can use any of these from any function within this State.
     //	But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-
+    this.speedPurchasedTotal = 0;
+    this.livesPurchasedTotal =0;
+    this.cheeseCake = "cake";
+    this.cheesePurchasedTotal =0;
 };
+
+    var carFloInst;
+    var speedPurchased = 0;
+    var livesPurchased =0;
+    var cheesePurchased = 0;
 //platform variables
 var gameWidth;
 var platformWidths;
@@ -49,7 +57,7 @@ var livesText;
 //game data
 var isDesktop;
 var gameRef;
-var lives = 3;
+var lives = 1 + livesPurchased;
 var xpTimer =0, xpTime =800;
 
 //timers and scores
@@ -62,11 +70,20 @@ var showRestart = false, show =0, one, two, three;
 var gameIsNew = true;
 //more sprites
 var bricks;
+var playerMaxSpeed;
 
+
+function makeZero(value){
+    if(!(value>=0)){
+        value =0;
+    }
+    return value;
+}
 
 function changeScore (scoreChange){
     score += scoreChange;
     speedScore += scoreChange;
+    console.log("score added: " + scoreChange + '  '+ score);
 }
 
 function dropPlatform (player, platform){
@@ -114,14 +131,16 @@ var newPlatform = function (player, platformGroupRef,platformName,gameRef){
      for (var i = 0; i < numStars ; i++)
     {
         randStar = Math.floor(Math.random()*(10+speedModifier*3/2));
-        console.log(randStar);
+  
         if(randStar<=5){
             var star = stars.create(0,0, 'squareCheese');
                 star.name = "yellow";
         }
         else if (randStar <=8){
+
             var star = stars.create(0,0, 'triangleCheese');
                 star.name = "pink";
+                 console.log("randStar " + randStar+ star.name);
         }
             else {
             var star = stars.create(0,0, 'circleCheese');
@@ -190,7 +209,7 @@ function destroyStar(starRef, bar){
  
 function loseLife(player, spike){
     lives --;
-
+    alert(lives+"  ");
     if (lives <0){
         BasicGame.Game.prototype.quitGame(this);
     }
@@ -207,16 +226,19 @@ function loseLife(player, spike){
 
 
 function collectStar (player, star){
-        
    
-    if(star.name = "yellow"){
-       changeScore(yellowScore);    
+    console.log("cheese collected:"+ cheesePurchased);
+    if(star.name == "yellow"){
+    changeScore(yellowScore+cheesePurchased);   
+    console.log("yeellow" + yellowScore);
     }
-    else if (star.name = "pink"){
-       changeScore(pinkScore);   
+    else if (star.name == "pink"){
+       changeScore(pinkScore+cheesePurchased);  
+       console.log("pink" + pinkScore);
     }
-    else if (star.name = "blue"){
-       changeScore(blueScore); 
+    else if (star.name == "blue"){
+       changeScore(blueScore+cheesePurchased); 
+       console.log("blue score:" + blueScore);
 
     }
    
@@ -238,9 +260,10 @@ function destroyGame (gameRef){
 
 
 function createGame (gameRef){
-    alert(this.gameRef.speedUpper);
     gameIsNew = true;
      platformTimer = gameRef.time.now+platformTime/2;
+     playerMaxSpeed = 250 + makeZero(speedPurchased);
+     console.log("max speed" + playerMaxSpeed);
      var botBar = spikeBars.create(0, gameRef.world.height - 32, 'spikesbot');
     botBar.scale.setTo(2,2);
     botBar.body.height=botBar.body.height*2;
@@ -328,6 +351,15 @@ BasicGame.Game.prototype = {
 	create: function () {
 
 ;
+    
+    speedPurchased = makeZero(this.game.speedPurchasedTotal);
+    livesPurchased = makeZero(this.game.livesPurchasedTotal);
+    cheesePurchased = makeZero(this.game.cheesePurchasedTotal);
+
+
+    console.log(speedPurchased + "  " + livesPurchased + "   " + cheesePurchased);
+
+ // alert(livesPurchased + "  "+ speedPurchased+"  "+cheesePurchased);
 gameWidth = this.game.width;
 platformWidths = [gameWidth/4, gameWidth/8, gameWidth/8, gameWidth/4];
 platformStarts = [0, (gameWidth/5+gameWidth/15),(gameWidth/4+gameWidth/8+ 2*gameWidth/15), (gameWidth/4+2*gameWidth/8+3*gameWidth/15)];
@@ -493,7 +525,7 @@ if(showRestart){
 
 
   
-if(Math.abs(player.body.velocity.x)>=350){
+if(Math.abs(player.body.velocity.x)>=playerMaxSpeed){
         player.body.acceleration.x=0;
     }
        
@@ -584,16 +616,21 @@ player.body.velocity.x+=300*speedModifier;
 	},
 
 	quitGame: function (gameRef) {
-
-        lives =3;
+        alert("ere");
+        lives =1;
         if(score>bestScore){
             bestScore = score;
         }
         currentPlatform = 0;
         speedModifier =1;
+        gameRef.totalScore = makeZero(gameRef.totalScore);
+    console.log(gameRef.totalScore+"before adding "+ score);
+        gameRef.totalScore +=score;
+     console.log(gameRef.totalScore+"after adding  "+ score);
+
         destroyGame(gameRef);
 		gameRef.state.start('MainMenu');
-
+       
 	},
 
     restartGame: function (gameRef) {
