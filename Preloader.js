@@ -33,16 +33,18 @@ BasicGame.Preloader.prototype = {
         this.load.image('<3', 'assets/heart.png');
     	this.load.image('plate', 'assets/woodPlatformReduced.png');
     	this.load.image('dropPlatform', 'assets/dropPlatform.png');
-    	//this.load.image('liftPlatform', 'assets/liftPlatform.png');
+    	this.load.image('liftPlatform', 'assets/liftPlatform.png');
    	 	this.load.image('squareCheese', 'assets/cheese.png');
    	 	this.load.image('circleCheese', 'assets/circleCheese.png');
    	 	this.load.image('triangleCheese', 'assets/triangleCheese.png');
-   		this.load.image('spikes', 'assets/spikes.png');
-   		this.load.image('spikesbot', 'assets/spikesbot.png');
+   		this.load.image('spikes', 'assets/spikes2.png');
+   		this.load.image('spikesbot', 'assets/spikesbot2.png');
    	 	this.load.spritesheet('dude', 'assets/mouse.png', 32, 48);
    	 	//this.load.spritesheet('dude', 'assets/playersheet.png');
  		//, 'assets/play_button.json
    	 	this.load.image('playButton', 'assets/play.jpg');
+   	 	this.load.image('storeButton', 'assets/storeButton.png');
+   	 	this.load.image('newGameButton', 'assets/newGame.png');
 
 		/**
 		this.load.image('titlepage', 'images/title.jpg');

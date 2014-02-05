@@ -51,7 +51,7 @@ BasicGame.Boot.prototype = {
 		    this.game.stage.scale.minWidth = window.innerWidth;
 		    this.game.stage.scale.minHeight = window.innerHeight;
 
-        alert(this.game.stage.scale.minWidth + "  " + this.game.stage.scale.minHeight);
+       // alert(this.game.stage.scale.minWidth + "  " + this.game.stage.scale.minHeight);
 		    this.game.stage.scale.forceOrientation(false, true, 'orientationImage');
 		   //  this.game.stage.scale.pageAlignVertically = true;
 		   // this.game.stage.scale.pageAlignHorizontally = true;

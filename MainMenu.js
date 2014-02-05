@@ -2,6 +2,8 @@
 var menuBackground;
 var storeOpen
 var cheeseCost = 1000, livesCost = 10000, speedCost = 5000;
+var gameWidth, gameHeight;
+var totalCheeseText;
 BasicGame.MainMenu = function (game) {
 
 	this.playButton = null;
@@ -24,7 +26,12 @@ BasicGame.MainMenu = function (game) {
 BasicGame.MainMenu.prototype = {
 
 	create: function () {
-console.log("created menu");
+
+	totalCheeseText = this.game.add.text(16, 16, '', { fontSize: '32px', fill: '#000' });
+	gameWidth = this.game.width;
+	gameHeight = this.game.height;
+	console.log("created menu");
+
 		//	We've already preloaded our assets, so let's kick right into the Main Menu itself.
 		//	Here all we're doing is playing some music and adding a picture and button
 		//	Naturally I expect you to do something significantly better :)
@@ -34,11 +41,14 @@ console.log("created menu");
 */
 		
 		this.makeMenu();
+
 	},
 
 	update: function () {
 		//	Do some nice funky main menu effect here
-		
+	if(storeOpen){
+			totalCheeseText.content = "Score: " + this.game.totalScore;
+	}
 
 	},
 
@@ -61,8 +71,10 @@ console.log("created menu");
 
 	},
 	openStore: function(pointer){
-console.log(this.game.totalScore);
 
+	totalCheeseText = this.game.add.text(16, 16, '', { fontSize: '32px', fill: '#000' });
+console.log(this.game.totalScore);
+	
     if(!(this.game.speedPurchasedTotal>=0)){
     this.game.speedPurchasedTotal = 0;
     }
@@ -102,9 +114,12 @@ console.log(this.game.totalScore);
 
 	},
 	buyLives: function(pointer){
+		alert('buy lives');
 		if(this.game.totalScore>livesCost){
+		if(this.game.livesPurchasedTotal<3){
 		this.game.totalScore -= livesCost;
-		this.game.livesPurchasedTotal +=100;
+		this.game.livesPurchasedTotal +=1;
+	}
 	}
 		else {
 			alert("You need more cheese!");
@@ -122,7 +137,8 @@ console.log(this.game.totalScore);
 
 	},
 	closeStore: function(pointer) {
-alert(this.game.totalScore);
+		//	totalCheeseText.kill();
+
 			this.buySpeedButton.kill();
 			this.buyLivesButton.kill();
 			this.buyCheeseButton.kill();
@@ -136,8 +152,10 @@ alert(this.game.totalScore);
 		menuBackground.width = this.game.width;
 		menuBackground.height = this.game.height;
 		//, 'buttonOver', 'buttonOut', 'buttonOver'
-		this.playButton = this.add.button(500, 600, 'playButton', this.nextTutorial, this);
-		this.storeButton = this.add.button(500, 200, 'playButton', this.openStore, this);
+		this.playButton = this.add.button(gameWidth/3, gameHeight/3, 'newGameButton', this.nextTutorial, this);
+		this.storeButton = this.add.button(gameWidth/3, gameHeight/3-this.playButton.height, 'storeButton', this.openStore, this);
+		//this.storeButton.height = gameHeight/3;
+		//this.storeButton.width = gameWidth/3;
 		if(bestScore>0){
 		var scoreText = this.add.text(200, 16, 'Your score: '+ score, { fontSize: '32px', fill: '#FFFFFF' });
 		var bestScoreText = this.add.text(200, 160, 'Your best score: '+ bestScore, { fontSize: '32px', fill: '#FFFFFF' });

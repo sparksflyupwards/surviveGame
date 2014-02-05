@@ -38,7 +38,7 @@ var platformStarts;
 var platformSpeeds;
 var currentPlatform;
 
-var platforms, dropPlatforms, wasDropPlatform, makeRightPlatform = true;
+var platforms, dropPlatforms, wasDropPlatform, liftPlatforms, wasLiftPlatform, makeRightPlatform = true;
 // acceleratePlatforms, jumpPlatforms;
 //stars 
 var stars, starWidth = 50, starHeight = 50;
@@ -46,7 +46,7 @@ yellowScore = 500, pinkScore = 800, blueScore = 1500;
 //more sprites
 var hearts;
 var player;
-var heart1, heart2, heart3;
+//var heart1, heart2, heart3;
 var spikeBars;
 //input
 var cursors;
@@ -57,7 +57,7 @@ var livesText;
 //game data
 var isDesktop;
 var gameRef;
-var lives = 1 + livesPurchased;
+var startingLives = 2, lives = startingLives + livesPurchased;
 var xpTimer =0, xpTime =800;
 
 //timers and scores
@@ -92,6 +92,11 @@ function dropPlatform (player, platform){
     player.body.velocity.y = -300;
 }
 
+function liftPlatform (player, platform){
+    //platform.body.velocity.y=300;
+   // platform.body.acceleration.y=300;
+    player.body.velocity.y = -300;
+}
 
 var platformCollision = function (player, platform){
 if(platform.name == "accelerate"){
@@ -209,7 +214,7 @@ function destroyStar(starRef, bar){
  
 function loseLife(player, spike){
     lives --;
-    alert(lives+"  ");
+    //alert(lives+"  ");
     if (lives <0){
         BasicGame.Game.prototype.quitGame(this);
     }
@@ -253,6 +258,7 @@ function destroyGame (gameRef){
     //destroy platforms
     platforms.removeAll();
     dropPlatforms.removeAll();
+    liftPlatforms.removeAll();
     //destroy stars
     stars.removeAll();
     bricks.removeAll();
@@ -263,11 +269,13 @@ function createGame (gameRef){
     gameIsNew = true;
      platformTimer = gameRef.time.now+platformTime/2;
      playerMaxSpeed = 250 + makeZero(speedPurchased);
+
      console.log("max speed" + playerMaxSpeed);
      var botBar = spikeBars.create(0, gameRef.world.height - 32, 'spikesbot');
+        botBar.y=gameRef.world.height-botBar.height*2;
     botBar.scale.setTo(2,2);
-    botBar.body.height=botBar.body.height*2;
     botBar.body.immovable = true;
+
     var topBar = spikeBars.create(0,0, 'spikes');
     topBar.scale.setTo(2,2);
     topBar.body.immovable = true;
@@ -358,7 +366,7 @@ BasicGame.Game.prototype = {
 
 
     console.log(speedPurchased + "  " + livesPurchased + "   " + cheesePurchased);
-
+   lives = livesPurchased;
  // alert(livesPurchased + "  "+ speedPurchased+"  "+cheesePurchased);
 gameWidth = this.game.width;
 platformWidths = [gameWidth/4, gameWidth/8, gameWidth/8, gameWidth/4];
@@ -382,6 +390,7 @@ currentPlatform =0;
     bricks = this.add.group();
     hearts = gameRef.add.group();
     dropPlatforms = this.add.group();
+    liftPlatforms = this.add.group();
     stars = gameRef.add.group();
    // acceleratePlatforms = this.add.group(); 
     jumpPlatforms = this.add.group(); 
@@ -390,11 +399,14 @@ currentPlatform =0;
 
 
     //hearts and their settings
-    heart1 = hearts.create (16+32, 150, '<3');
-    heart1.width = 32;
-    heart1.height = 32;
-    heart1.immovable = true;
-
+    var heart;
+    for(var i =0; i<lives; i++){
+    heart = hearts.create (16+32*(i+1), 150, '<3');
+    heart.width = 32;
+    heart.height = 32;
+    heart.immovable = true;
+}
+/**
     heart2 = hearts.create (16+32*2, 150, '<3');
     heart2.width = 32;
     heart2.height = 32;
@@ -404,7 +416,7 @@ currentPlatform =0;
     heart3.width = 32;
     heart3.height = 32;
     heart3.immovable = true;
-
+*/
 
 
     // The text variables
@@ -458,7 +470,7 @@ if(showRestart){
 }
   
    if(score/1000>1){
-   speedModifier = 1+speedScore/30000;
+   speedModifier = 1+speedScore/300000;
     }
    
    player.body.gravity.y = 6*speedModifier;
@@ -482,8 +494,13 @@ if(showRestart){
     wasDropPlatform = true;
     newPlatform(player, dropPlatforms, "dropPlatform", gameRef); 
     }
-    else { 
+    else if (Math.random()*10<2&&!wasLiftPlatform) {
+    wasLiftPlatform = true;
+    newPlatform(player, liftPlatforms, "liftPlatform", gameRef); 
+    }
+    else{ 
     wasDropPlatform = false;
+    wasLiftPlatform = false;
     newPlatform(player, platforms, "plate", gameRef); 
     }
     /**
@@ -507,11 +524,13 @@ if(showRestart){
     //this.physics.collide(player, acceleratePlatforms);
     this.physics.collide(stars, platforms);
     this.physics.collide(stars, dropPlatforms);
+    this.physics.collide(stars, liftPlatforms);
    // this.physics.collide(player, jumpPlatforms, platformCollision, null, gameRef);
    // this.physics.collide(player, acceleratePlatforms, platformCollision, null, gameRef);
    
     // overlap settings
     this.physics.overlap(player, dropPlatforms, dropPlatform, null, gameRef);
+    this.physics.overlap(player, liftPlatforms, liftPlatform, null, gameRef);
     this.physics.overlap(player, stars, collectStar, null, this);
     this.physics.overlap(platforms, spikeBars, destroyPlatform, null, gameRef);
    // this.physics.overlap(dropPlatforms, spikeBars, destroyPlatform, null, gameRef);
@@ -592,7 +611,7 @@ else {
     {
         // Stand still
         player.animations.stop();
-        player.body.velocity.x = 0;
+       // player.body.velocity.x = 0;
         // Math.abs(player.body.velocity.x)-150;
         player.frame = 4;
     }
@@ -616,8 +635,7 @@ player.body.velocity.x+=300*speedModifier;
 	},
 
 	quitGame: function (gameRef) {
-        alert("ere");
-        lives =1;
+        lives =startingLives;
         if(score>bestScore){
             bestScore = score;
         }
