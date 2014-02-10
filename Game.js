@@ -25,6 +25,7 @@ BasicGame.Game = function (game) {
     this.livesPurchasedTotal =0;
     this.cheeseCake = "cake";
     this.cheesePurchasedTotal =0;
+    this.bestScore = 0;
 };
 
     var carFloInst;
@@ -63,7 +64,7 @@ var xpTimer =0, xpTime =800;
 //timers and scores
 var platformTimer=0 , platformTime = 3000;
 var restartTimer =0, restartTime = platformTime/6;
-var score = 0, scoreRate = 1, bestScore =0, speedScore =0;
+var score = 0, scoreRate = 1, speedScore =0;
 var naturalVelocity =0;
 var speedModifier=1, platformSpeedNew;
 var showRestart = false, show =0, one, two, three;
@@ -397,7 +398,6 @@ currentPlatform =0;
 
     
 
-
     //hearts and their settings
     var heart;
     for(var i =0; i<lives; i++){
@@ -636,8 +636,8 @@ player.body.velocity.x+=300*speedModifier;
 
 	quitGame: function (gameRef) {
         lives =startingLives;
-        if(score>bestScore){
-            bestScore = score;
+        if(score>gameRef.bestScore){
+            gameRef.bestScore = score;
         }
         currentPlatform = 0;
         speedModifier =1;

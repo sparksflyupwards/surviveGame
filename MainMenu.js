@@ -13,11 +13,11 @@ BasicGame.MainMenu = function (game) {
 	this.buyLivesButton = null;
 	this.buyCheeseButton = null;
 	this.closeStoreButton = null;
-/**
+
 	this.speedPurchased =0;
 	this.livesPurchased =0;
 	this.cheesePurchased =0;
-*/
+
 	this.tutorialButton = null;
 	this.tutorialStage="start";
 
@@ -101,21 +101,22 @@ console.log(this.game.totalScore);
 		
 		},
 	buySpeed: function(pointer){
-		//if(true||this.totalScore>speedCost){
+		if(this.totalScore>=speedCost){
 		console.log("before" + this.game.speedPurchasedTotal+ "score " + this.game.totalScore);
 		this.game.totalScore-=speedCost;
 		this.game.speedPurchasedTotal +=100;
 		console.log("after "+ this.game.speedPurchasedTotal + "score " + this.game.totalScore );
 		this.game.cheeseCake += " with cherries";
-	//}
-	//	else {
-	//		alert("You need more cheese!");
-	//	}
+		alert("bought cheese");
+	}
+		else {
+			alert("You need more cheese!");
+		}
 
 	},
 	buyLives: function(pointer){
 		alert('buy lives');
-		if(this.game.totalScore>livesCost){
+		if(this.game.totalScore>=livesCost){
 		if(this.game.livesPurchasedTotal<3){
 		this.game.totalScore -= livesCost;
 		this.game.livesPurchasedTotal +=1;
@@ -127,8 +128,8 @@ console.log(this.game.totalScore);
 
 	},
 	buyCheese: function(pointer){
-		if(this.game.totalScore>cheeseCost){
-		this.totalScore -= cheeseCost;
+		if(this.game.totalScore>=cheeseCost){
+		this.game.totalScore -= cheeseCost;
 		this.game.cheesePurchasedTotal +=100;
 	}
 		else {
@@ -156,9 +157,9 @@ console.log(this.game.totalScore);
 		this.storeButton = this.add.button(gameWidth/3, gameHeight/3-this.playButton.height, 'storeButton', this.openStore, this);
 		//this.storeButton.height = gameHeight/3;
 		//this.storeButton.width = gameWidth/3;
-		if(bestScore>0){
+		if(this.game.bestScore>0){
 		var scoreText = this.add.text(200, 16, 'Your score: '+ score, { fontSize: '32px', fill: '#FFFFFF' });
-		var bestScoreText = this.add.text(200, 160, 'Your best score: '+ bestScore, { fontSize: '32px', fill: '#FFFFFF' });
+		var bestScoreText = this.add.text(200, 160, 'Your best score: '+ this.game.bestScore, { fontSize: '32px', fill: '#FFFFFF' });
 		score = 0;
 		}
 	}
