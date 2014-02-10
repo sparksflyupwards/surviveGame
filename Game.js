@@ -26,6 +26,7 @@ BasicGame.Game = function (game) {
     this.cheeseCake = "cake";
     this.cheesePurchasedTotal =0;
     this.bestScore = 0;
+    this.firstGame = true;
 };
 
     var carFloInst;
@@ -73,7 +74,7 @@ var gameIsNew = true;
 var bricks;
 var playerMaxSpeed;
 
-
+var showHighScore = true, brokeHighScore = false;
 function makeZero(value){
     if(!(value>=0)){
         value =0;
@@ -267,6 +268,7 @@ function destroyGame (gameRef){
 
 
 function createGame (gameRef){
+ 
     gameIsNew = true;
      platformTimer = gameRef.time.now+platformTime/2;
      playerMaxSpeed = 250 + makeZero(speedPurchased);
@@ -305,13 +307,13 @@ function createGame (gameRef){
     //player.body.bounce.y = 0.2;
     player.body.gravity.y = 6;
 
-    player.body.collideWorldBounds = true;
+    //player.body.collideWorldBounds = true;
     //animations, walking left and right.
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
 
-    player.x = -150;
+    player.x = 150;
     player.y = 250;
 
     
@@ -360,7 +362,9 @@ BasicGame.Game.prototype = {
 	create: function () {
 
 ;
-    
+    if(this.game.firstGame!=false){
+    this.game.firstGame = true;
+    }
     speedPurchased = makeZero(this.game.speedPurchasedTotal);
     livesPurchased = makeZero(this.game.livesPurchasedTotal);
     cheesePurchased = makeZero(this.game.cheesePurchasedTotal);
@@ -469,11 +473,44 @@ if(showRestart){
     }
 }
   
+    //shows highscore message
+if(showHighScore&&brokeHighScore){
+    console.log("showHighscore!");
+    showHighScore = false;
+    var highscoreImage = this.game.add.sprite(gameRef.world.width/2, gameRef.world.height/2, 'highscore');
+    highscoreImage.animations.add('highscoreshow');
+    //play animation kill on complete
+    highscoreImage.animations.play('highscoreshow', 20, false, true);
+}
+
+
+
+
+
    if(score/1000>1){
    speedModifier = 1+speedScore/300000;
     }
    
    player.body.gravity.y = 6*speedModifier;
+
+
+   //keeps player in world bounds transporting from left to right
+   if(player.x<0){
+    console.log(player.x+ "left out");
+    player.x = this.game.width;
+   }
+   if(player.x>(this.game.width)){
+    console.log("right out");
+    player.x = player.width;
+   }
+
+   //checks for new highscore
+   if(!brokeHighScore&&!(this.game.firstGame)){
+    if (score>this.game.bestScore){
+    brokeHighScore = true;
+   }
+}
+
 
    // experience counting
    /**
@@ -636,6 +673,9 @@ player.body.velocity.x+=300*speedModifier;
 
 	quitGame: function (gameRef) {
         lives =startingLives;
+        if(!(gameRef.bestScore>=0)){
+            gameRef.bestScore = 0; 
+        }
         if(score>gameRef.bestScore){
             gameRef.bestScore = score;
         }
@@ -645,9 +685,11 @@ player.body.velocity.x+=300*speedModifier;
     console.log(gameRef.totalScore+"before adding "+ score);
         gameRef.totalScore +=score;
      console.log(gameRef.totalScore+"after adding  "+ score);
-
+     console.log("best scorefinal:" +gameRef.bestScore);
         destroyGame(gameRef);
+        gameRef.firstGame = false;
 		gameRef.state.start('MainMenu');
+
        
 	},
 

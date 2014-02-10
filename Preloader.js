@@ -45,7 +45,7 @@ BasicGame.Preloader.prototype = {
    	 	this.load.image('playButton', 'assets/play.jpg');
    	 	this.load.image('storeButton', 'assets/storeButton.png');
    	 	this.load.image('newGameButton', 'assets/newGame.png');
-
+   	 	this.load.spritesheet('highscore', 'assets/highscore.png', 32,32*2,32*3,32*4);
 		/**
 		this.load.image('titlepage', 'images/title.jpg');
 		this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');

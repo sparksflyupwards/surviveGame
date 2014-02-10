@@ -21,6 +21,8 @@ BasicGame.MainMenu = function (game) {
 	this.tutorialButton = null;
 	this.tutorialStage="start";
 
+	this.firstGame = true;
+
 };
 
 BasicGame.MainMenu.prototype = {
