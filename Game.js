@@ -42,8 +42,8 @@ var currentPlatform;
 
 var platforms, dropPlatforms, wasDropPlatform, liftPlatforms, wasLiftPlatform, makeRightPlatform = true;
 // acceleratePlatforms, jumpPlatforms;
-//stars 
-var stars, starWidth = 50, starHeight = 50;
+//cheeses 
+var cheeses, cheeseWidth = 50, cheeseHeight = 50;
 yellowScore = 500, pinkScore = 800, blueScore = 1500;
 //more sprites
 var hearts;
@@ -59,16 +59,16 @@ var livesText;
 //game data
 var isDesktop;
 var gameRef;
-var startingLives = 2, lives = startingLives + livesPurchased;
+var cheesetingLives = 2, lives = cheesetingLives + livesPurchased;
 var xpTimer =0, xpTime =800;
 
 //timers and scores
 var platformTimer=0 , platformTime = 3000;
-var restartTimer =0, restartTime = platformTime/6;
+var recheesetTimer =0, recheesetTime = platformTime/6;
 var score = 0, scoreRate = 1, speedScore =0;
 var naturalVelocity =0;
 var speedModifier=1, platformSpeedNew;
-var showRestart = false, show =0, one, two, three;
+var showRecheeset = false, show =0, one, two, three;
 var gameIsNew = true;
 //more sprites
 var bricks;
@@ -149,29 +149,29 @@ var newPlatform = function (player, platformGroupRef,platformName,gameRef){
         randStar = Math.floor(Math.random()*(10+speedModifier*3/2));
   
         if(randStar<=5){
-            var star = stars.create(0,0, 'squareCheese');
-                star.name = "yellow";
+            var cheese = cheeses.create(0,0, 'squareCheese');
+                cheese.name = "yellow";
         }
         else if (randStar <=8){
 
-            var star = stars.create(0,0, 'triangleCheese');
-                star.name = "pink";
-                 console.log("randStar " + randStar+ star.name);
+            var cheese = cheeses.create(0,0, 'triangleCheese');
+                cheese.name = "pink";
+                 console.log("randStar " + randStar+ cheese.name);
         }
             else {
-            var star = stars.create(0,0, 'circleCheese');
-                star.name = "blue";
+            var cheese = cheeses.create(0,0, 'circleCheese');
+                cheese.name = "blue";
         }
-        star.body.width = 50;
-        star.body.height = 50;
-        star.body.x = (ledge.width/numStars*i +posX);
-        star.body.y = (posY-star.body.height-10);
-        star.width = 50;
-        star.height = 50;
-        star.body.gravity.y = 20;
+        cheese.body.width = 50;
+        cheese.body.height = 50;
+        cheese.body.x = (ledge.width/numStars*i +posX);
+        cheese.body.y = (posY-cheese.body.height-10);
+        cheese.width = 50;
+        cheese.height = 50;
+        cheese.body.gravity.y = 20;
       
 
-       // star.body.bounce.y = 0.7 + Math.random() * 0.2;
+       // cheese.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
     //alert("newPlatform: "+ledge.name);
     /**
@@ -230,8 +230,8 @@ function destroyPlatform (platformRef, bar){
     platformRef.kill();
  
 }
-function destroyStar(starRef, bar){
-    starRef.kill();
+function destroyStar(cheeseRef, bar){
+    cheeseRef.kill();
  
 }
 
@@ -245,8 +245,8 @@ function loseLife(player, spike){
     else{
        hearts.getAt(lives).kill(); 
        livesText.content = "Lives: " + lives;
-       showRestart = true;
-       BasicGame.Game.prototype.restartGame(this);
+       showRecheeset = true;
+       BasicGame.Game.prototype.recheesetGame(this);
     }
     
     
@@ -254,25 +254,25 @@ function loseLife(player, spike){
 }
 
 
-function collectStar (player, star){
+function collectStar (player, cheese){
    
     console.log("cheese collected:"+ cheesePurchased);
-    if(star.name == "yellow"){
+    if(cheese.name == "yellow"){
     changeScore(yellowScore+cheesePurchased);   
     console.log("yeellow" + yellowScore);
     }
-    else if (star.name == "pink"){
+    else if (cheese.name == "pink"){
        changeScore(pinkScore+cheesePurchased);  
        console.log("pink" + pinkScore);
     }
-    else if (star.name == "blue"){
+    else if (cheese.name == "blue"){
        changeScore(blueScore+cheesePurchased); 
        console.log("blue score:" + blueScore);
 
     }
    
     scoreText.content = 'Score: ' + score;
-     star.kill();
+     cheese.kill();
 }
 
 
@@ -283,8 +283,8 @@ function destroyGame (gameRef){
     platforms.removeAll();
     dropPlatforms.removeAll();
     liftPlatforms.removeAll();
-    //destroy stars
-    stars.removeAll();
+    //destroy cheeses
+    cheeses.removeAll();
     bricks.removeAll();
 }
 
@@ -328,19 +328,19 @@ function createGame (gameRef){
     ledge = platforms.create(playerPlatform.x,playerPlatform.y+2*gameRef.world.height/5.5, 'plate');
     ledge.body.immovable = true;
     ledge.body.velocity.y = -80*speedModifier;
-    var star = stars.create(100,100,'squareCheese');
+    var cheese = cheeses.create(100,100,'squareCheese');
 
-     star.width = starWidth;
-        star.height = starHeight;
-            star.y = (ledge.y-star.height-10);
-             star.x = (ledge.x+ledge.width/2-star.width/2);
+     cheese.width = cheeseWidth;
+        cheese.height = cheeseHeight;
+            cheese.y = (ledge.y-cheese.height-10);
+             cheese.x = (ledge.x+ledge.width/2-cheese.width/2);
       //  ledge.x+2 * 70,ledge.y-32, 'squareCheese');
     /**
     
        
        
     */
-        star.body.gravity.y = 20;
+        cheese.body.gravity.y = 20;
 
 
     /**
@@ -348,22 +348,22 @@ function createGame (gameRef){
     {
          switch(Math.floor(Math.random()*3)){
             case 1:
-            var star = stars.create(ledge.x+i * 70,ledge.y-32, 'squareCheese');
+            var cheese = cheeses.create(ledge.x+i * 70,ledge.y-32, 'squareCheese');
             break;
             case 2: 
-            var star = stars.create(ledge.x+i * 70,ledge.y-32, 'circleCheese');
+            var cheese = cheeses.create(ledge.x+i * 70,ledge.y-32, 'circleCheese');
             break;
             default:
-            var star = stars.create(ledge.x+i * 70,ledge.y-32, 'triangleCheese');
+            var cheese = cheeses.create(ledge.x+i * 70,ledge.y-32, 'triangleCheese');
 
         }
         
-          star.body.height = 50;
-        star.body.x = (ledge.x+ledge.width/12*i);
-        star.body.y = (ledge.y-star.body.height-10);
-        star.width = starWidth;
-        star.height = starHeight;
-        star.body.gravity.y = 20;
+          cheese.body.height = 50;
+        cheese.body.x = (ledge.x+ledge.width/12*i);
+        cheese.body.y = (ledge.y-cheese.body.height-10);
+        cheese.width = cheeseWidth;
+        cheese.height = cheeseHeight;
+        cheese.body.gravity.y = 20;
 
 } 
 */
@@ -389,7 +389,7 @@ function createGame (gameRef){
    
 
 
-    // Starting stars
+    // Starting cheeses
 
     
 
@@ -445,7 +445,7 @@ currentPlatform =0;
     hearts = gameRef.add.group();
     dropPlatforms = this.add.group();
     liftPlatforms = this.add.group();
-    stars = gameRef.add.group();
+    cheeses = gameRef.add.group();
    // acceleratePlatforms = this.add.group(); 
     jumpPlatforms = this.add.group(); 
 
@@ -482,16 +482,16 @@ currentPlatform =0;
 	},
 
 	update: function () {
-if(showRestart){
+if(showRecheeset){
 
    
-    if(this.time.now>=restartTimer){
+    if(this.time.now>=recheesetTimer){
     if(gameIsNew){
         gameIsNew = false;
-        restartTimer = this.time.now + restartTime/2;
+        recheesetTimer = this.time.now + recheesetTime/2;
     }
     else{
-    restartTimer = this.time.now + restartTime;
+    recheesetTimer = this.time.now + recheesetTime;
     }
     if(show ==0){
     one = gameRef.add.sprite(gameRef.world.width/2, gameRef.world.height/2, 'imageof1');
@@ -516,7 +516,7 @@ if(showRestart){
     else if (show == 5){
 
     three.kill();
-    showRestart = false;
+    showRecheeset = false;
     show =0;
     }
     }
@@ -563,7 +563,7 @@ if(showHighScore&&brokeHighScore){
 
    // experience counting
    /**
-   if((this.time.now>=xpTimer)&&!showRestart){
+   if((this.time.now>=xpTimer)&&!showRecheeset){
     scoreRate +=0.1;
     score +=50*scoreRate;
    // scoreText.content = 'Score: ' + score+ 'speedModifier: ' + speedModifier + "\n platform speed: " + platformSpeedNew + " platformTimer: " + platformTime/speedModifier;
@@ -572,7 +572,7 @@ if(showHighScore&&brokeHighScore){
    */
    //  timeText.content = this.game.scale.width+"   "+ this.game.scale.height;
     //platform making
-    if(!showRestart){
+    if(!showRecheeset){
     if(this.time.now>platformTimer){
     
     platformTimer = this.time.now + platformTime/speedModifier;
@@ -613,19 +613,19 @@ if(showHighScore&&brokeHighScore){
     // collide settings
     this.physics.collide(player, platforms);
     //this.physics.collide(player, acceleratePlatforms);
-    this.physics.collide(stars, platforms);
-    this.physics.collide(stars, dropPlatforms);
-    this.physics.collide(stars, liftPlatforms);
+    this.physics.collide(cheeses, platforms);
+    this.physics.collide(cheeses, dropPlatforms);
+    this.physics.collide(cheeses, liftPlatforms);
    // this.physics.collide(player, jumpPlatforms, platformCollision, null, gameRef);
    // this.physics.collide(player, acceleratePlatforms, platformCollision, null, gameRef);
    
     // overlap settings
     this.physics.overlap(player, dropPlatforms, dropPlatform, null, gameRef);
     this.physics.overlap(player, liftPlatforms, liftPlatform, null, gameRef);
-    this.physics.overlap(player, stars, collectStar, null, this);
+    this.physics.overlap(player, cheeses, collectStar, null, this);
     this.physics.overlap(platforms, spikeBars, destroyPlatform, null, gameRef);
    // this.physics.overlap(dropPlatforms, spikeBars, destroyPlatform, null, gameRef);
-    this.physics.overlap(stars, spikeBars, destroyStar, null, gameRef);
+    this.physics.overlap(cheeses, spikeBars, destroyStar, null, gameRef);
 
 
    // this.physics.overlap(dropPlatforms, spikeBars, destroyPlatform, null, gameRef);
@@ -726,7 +726,7 @@ player.body.velocity.x+=300*speedModifier;
 	},
 
 	quitGame: function (gameRef) {
-        lives =startingLives;
+        lives =cheesetingLives;
         if(!(gameRef.bestScore>=0)){
             gameRef.bestScore = 0; 
         }
@@ -742,12 +742,12 @@ player.body.velocity.x+=300*speedModifier;
      console.log("best scorefinal:" +gameRef.bestScore);
         destroyGame(gameRef);
         gameRef.firstGame = false;
-		gameRef.state.start('MainMenu');
+		gameRef.state.cheeset('MainMenu');
 
        
 	},
 
-    restartGame: function (gameRef) {
+    recheesetGame: function (gameRef) {
  
      //pause game
      //show 3-2-1
