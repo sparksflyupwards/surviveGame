@@ -59,16 +59,16 @@ var livesText;
 //game data
 var isDesktop;
 var gameRef;
-var cheesetingLives = 2, lives = cheesetingLives + livesPurchased;
+var startingLives = 2, lives = startingLives + livesPurchased;
 var xpTimer =0, xpTime =800;
 
 //timers and scores
 var platformTimer=0 , platformTime = 3000;
-var recheesetTimer =0, recheesetTime = platformTime/6;
+var restartTimer =0, restartTime = platformTime/6;
 var score = 0, scoreRate = 1, speedScore =0;
 var naturalVelocity =0;
 var speedModifier=1, platformSpeedNew;
-var showRecheeset = false, show =0, one, two, three;
+var showRestart = false, show =0, one, two, three;
 var gameIsNew = true;
 //more sprites
 var bricks;
@@ -245,8 +245,8 @@ function loseLife(player, spike){
     else{
        hearts.getAt(lives).kill(); 
        livesText.content = "Lives: " + lives;
-       showRecheeset = true;
-       BasicGame.Game.prototype.recheesetGame(this);
+       showRestart = true;
+       BasicGame.Game.prototype.restartGame(this);
     }
     
     
@@ -482,16 +482,16 @@ currentPlatform =0;
 	},
 
 	update: function () {
-if(showRecheeset){
+if(showRestart){
 
    
-    if(this.time.now>=recheesetTimer){
+    if(this.time.now>=restartTimer){
     if(gameIsNew){
         gameIsNew = false;
-        recheesetTimer = this.time.now + recheesetTime/2;
+        restartTimer = this.time.now + restartTime/2;
     }
     else{
-    recheesetTimer = this.time.now + recheesetTime;
+    restartTimer = this.time.now + restartTime;
     }
     if(show ==0){
     one = gameRef.add.sprite(gameRef.world.width/2, gameRef.world.height/2, 'imageof1');
@@ -516,7 +516,7 @@ if(showRecheeset){
     else if (show == 5){
 
     three.kill();
-    showRecheeset = false;
+    showRestart = false;
     show =0;
     }
     }
@@ -563,7 +563,7 @@ if(showHighScore&&brokeHighScore){
 
    // experience counting
    /**
-   if((this.time.now>=xpTimer)&&!showRecheeset){
+   if((this.time.now>=xpTimer)&&!showRestart){
     scoreRate +=0.1;
     score +=50*scoreRate;
    // scoreText.content = 'Score: ' + score+ 'speedModifier: ' + speedModifier + "\n platform speed: " + platformSpeedNew + " platformTimer: " + platformTime/speedModifier;
@@ -572,7 +572,7 @@ if(showHighScore&&brokeHighScore){
    */
    //  timeText.content = this.game.scale.width+"   "+ this.game.scale.height;
     //platform making
-    if(!showRecheeset){
+    if(!showRestart){
     if(this.time.now>platformTimer){
     
     platformTimer = this.time.now + platformTime/speedModifier;
@@ -726,7 +726,7 @@ player.body.velocity.x+=300*speedModifier;
 	},
 
 	quitGame: function (gameRef) {
-        lives =cheesetingLives;
+        lives =startingLives;
         if(!(gameRef.bestScore>=0)){
             gameRef.bestScore = 0; 
         }
@@ -742,12 +742,12 @@ player.body.velocity.x+=300*speedModifier;
      console.log("best scorefinal:" +gameRef.bestScore);
         destroyGame(gameRef);
         gameRef.firstGame = false;
-		gameRef.state.cheeset('MainMenu');
+		gameRef.state.start('MainMenu');
 
        
 	},
 
-    recheesetGame: function (gameRef) {
+    restartGame: function (gameRef) {
  
      //pause game
      //show 3-2-1
