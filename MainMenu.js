@@ -4,6 +4,9 @@ var storeOpen
 var cheeseCost = 1000, livesCost = 10000, speedCost = 5000;
 var gameWidth, gameHeight;
 var totalCheeseText;
+var cheeseCostText, cheestTotalText;
+var livesCostText, livesTotalText;
+var speedCostText, speedTotalText;
 BasicGame.MainMenu = function (game) {
 
 	this.playButton = null;
@@ -50,6 +53,12 @@ BasicGame.MainMenu.prototype = {
 		//	Do some nice funky main menu effect here
 	if(storeOpen){
 			totalCheeseText.content = "Score: " + this.game.totalScore;
+			speedTotalText.content = 'Total Bonus '+ this.game.speedPurchasedTotal;
+
+			livesTotalText.content = 'Lives owned '+ this.game.livesPurchasedTotal;
+ 			cheestTotalText.content = 'Cheese bonus '+ this.game.cheesePurchasedTotal;
+
+
 	}
 
 	},
@@ -96,20 +105,37 @@ console.log(this.game.totalScore);
 		this.playButton.kill();
 		this.storeButton.kill();
 		storeOpen = true;
-			this.buySpeedButton = this.add.button(200, 200, 'playButton', this.buySpeed, this);
-			this.buyLivesButton = this.add.button(200, 400, 'playButton', this.buyLives, this);
-			this.buyCheeseButton = this.add.button(200, 600, 'playButton', this.buyCheese, this);
-			this.closeStoreButton = this.add.button(500, 600, 'playButton', this.closeStore, this);
+			var buttonWidth = 50;
+			var buttonHeight = 50;
+			this.buySpeedButton = this.add.button(200, 200, 'dude', this.buySpeed, this);
+			this.buySpeedButton.width = buttonWidth;
+			this.buySpeedButton.height = buttonHeight;
+			speedCostText = this.add.text(this.buySpeedButton.x+this.buySpeedButton.width+20, this.buySpeedButton.y+20, 'Speed costs '+ speedCost, { fontSize: '32px', fill: '#FFFFFF' });
+			speedTotalText = this.add.text(this.buySpeedButton.x+this.buySpeedButton.width+20, this.buySpeedButton.y+70, 'Total Bonus '+ this.game.speedPurchasedTotal, { fontSize: '32px', fill: '#FFFFFF' });
+
+
+			this.buyLivesButton = this.add.button(200, 400, '<3', this.buyLives, this);
+			this.buyLivesButton.width = buttonWidth;
+			this.buyLivesButton.height = buttonHeight;
+			livesCostText = this.add.text(this.buyLivesButton.x+this.buyLivesButton.width+20, this.buyLivesButton.y+20, 'Lives costs '+ livesCost, { fontSize: '32px', fill: '#FFFFFF' });
+			livesTotalText = this.add.text(this.buyLivesButton.x+this.buyLivesButton.width+20, this.buyLivesButton.y+70, 'Lives owned '+ this.game.livesPurchasedTotal, { fontSize: '32px', fill: '#FFFFFF' });
+
+
+			this.buyCheeseButton = this.add.button(200, 600, 'squareCheese', this.buyCheese, this);
+			this.buyCheeseButton.width = buttonWidth;
+			this.buyCheeseButton.height = buttonHeight;
+			cheeseCostText = this.add.text(this.buyCheeseButton.x+this.buyCheeseButton.width+20, this.buyCheeseButton.y+20, 'Cheese costs '+ cheeseCost, { fontSize: '32px', fill: '#FFFFFF' });
+			cheestTotalText = this.add.text(this.buyCheeseButton.x+this.buyCheeseButton.width+20, this.buyCheeseButton.y+70, 'Cheese bonus '+ this.game.cheesePurchasedTotal, { fontSize: '32px', fill: '#FFFFFF' });
+
+
+
+			this.closeStoreButton = this.add.button(800, 600, 'playButton', this.closeStore, this);
 		
 		},
 	buySpeed: function(pointer){
-		if(this.totalScore>=speedCost){
-		console.log("before" + this.game.speedPurchasedTotal+ "score " + this.game.totalScore);
+		if(this.game.totalScore>=speedCost){
 		this.game.totalScore-=speedCost;
 		this.game.speedPurchasedTotal +=100;
-		console.log("after "+ this.game.speedPurchasedTotal + "score " + this.game.totalScore );
-		this.game.cheeseCake += " with cherries";
-		alert("bought cheese");
 	}
 		else {
 			alert("You need more cheese!");

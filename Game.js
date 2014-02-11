@@ -328,11 +328,18 @@ function createGame (gameRef){
     ledge = platforms.create(playerPlatform.x,playerPlatform.y+2*gameRef.world.height/5.5, 'plate');
     ledge.body.immovable = true;
     ledge.body.velocity.y = -80*speedModifier;
-    var star = stars.create(ledge.x+2 * 70,ledge.y-32, 'squareCheese');
-     star.body.x = (ledge.x+ledge.width/12*2);
-        star.body.y = (ledge.y-star.body.height-10);
-        star.width = starWidth;
+    var star = stars.create(100,100,'squareCheese');
+
+     star.width = starWidth;
         star.height = starHeight;
+            star.y = (ledge.y-star.height-10);
+             star.x = (ledge.x+ledge.width/2-star.width/2);
+      //  ledge.x+2 * 70,ledge.y-32, 'squareCheese');
+    /**
+    
+       
+       
+    */
         star.body.gravity.y = 20;
 
 
