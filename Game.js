@@ -115,9 +115,18 @@ player.body.acceleration.x = 0;
 
 };
 
-
+var randomSelection = function (choice1, choice2){
+    if(Math.floor(Math.random()*2)==0)
+        return choice1;
+    else
+        return choice2;
+}
 
 var newPlatform = function (player, platformGroupRef,platformName,gameRef){
+ 
+  
+   
+    //currentPlatform+=(j-1);
     //var posX = platformStarts[Math.floor(Math.random() * platformStarts.length)]
     var posX = platformStarts[currentPlatform];
     var posY = gameRef.height-90;
@@ -182,9 +191,20 @@ var newPlatform = function (player, platformGroupRef,platformName,gameRef){
             makeRightPlatform = true;
         }
 
+//currentPlatform=Math.floor(Math.random()*4);
 
-
-        
+switch(currentPlatform){
+    case 0: currentPlatform = randomSelection(1,3);
+    break;
+    case 1: currentPlatform = randomSelection(0,2);
+    break;
+    case 2: currentPlatform = randomSelection(1,3);
+    break;
+    case 3: currentPlatform = randomSelection(0,2);
+    break;
+    default: currentPlatform=0;
+}
+       /** 
     if(makeRightPlatform&&currentPlatform<3){
     currentPlatform++;
     if(currentPlatform>=3){
@@ -200,9 +220,11 @@ var newPlatform = function (player, platformGroupRef,platformName,gameRef){
             makeRightPlatform = true;
         }
     }
+    */
     
-}
+    
 
+}
 function destroyPlatform (platformRef, bar){
    
     platformRef.kill();
@@ -285,22 +307,59 @@ function createGame (gameRef){
     
 
     // Create the ground the player stands on.
-    var ground = platforms.create(0, gameRef.world.height - 64, 'plate');
-   
-    ground.body.immovable = true;
-    ground.body.velocity.y = -80;
-    ground.width = gameRef.world.height/4;
-
+    var playerPlatform = platforms.create(gameRef.width/2, gameRef.world.height/2, 'plate');
+    playerPlatform.x-=playerPlatform.width/2;
+    playerPlatform.body.immovable = true;
+    playerPlatform.body.velocity.y = -80;
+  //  playerPlatform.width = gameRef.world.height/4;
+    ledgeWidth = gameRef.world.width/10;
     // Now let's create two ledges
-    var ledge = platforms.create(400, 400, 'plate');
+    var ledge = platforms.create(playerPlatform.x-ledgeWidth*1.5 ,playerPlatform.y+gameRef.world.height/5.5, 'plate');
     ledge.body.immovable = true;
-    ledge.width = 200;
+  //  ledge.width = ledgeWidth;
     ledge.body.velocity.y = -80*speedModifier;
-    ledge = platforms.create(-150, 250, 'plate');
-    ledge.body.immovable = true;
-    ledge.body.velocity.y = -80*speedModifier;
-   
 
+    ledge = platforms.create(playerPlatform.x+ledgeWidth*1.5,playerPlatform.y+gameRef.world.height/5.5, 'plate');
+    ledge.body.immovable = true;
+    ledge.body.velocity.y = -80*speedModifier;
+
+
+
+    ledge = platforms.create(playerPlatform.x,playerPlatform.y+2*gameRef.world.height/5.5, 'plate');
+    ledge.body.immovable = true;
+    ledge.body.velocity.y = -80*speedModifier;
+    var star = stars.create(ledge.x+2 * 70,ledge.y-32, 'squareCheese');
+     star.body.x = (ledge.x+ledge.width/12*2);
+        star.body.y = (ledge.y-star.body.height-10);
+        star.width = starWidth;
+        star.height = starHeight;
+        star.body.gravity.y = 20;
+
+
+    /**
+     for (var i = 0; i < 4; i++)
+    {
+         switch(Math.floor(Math.random()*3)){
+            case 1:
+            var star = stars.create(ledge.x+i * 70,ledge.y-32, 'squareCheese');
+            break;
+            case 2: 
+            var star = stars.create(ledge.x+i * 70,ledge.y-32, 'circleCheese');
+            break;
+            default:
+            var star = stars.create(ledge.x+i * 70,ledge.y-32, 'triangleCheese');
+
+        }
+        
+          star.body.height = 50;
+        star.body.x = (ledge.x+ledge.width/12*i);
+        star.body.y = (ledge.y-star.body.height-10);
+        star.width = starWidth;
+        star.height = starHeight;
+        star.body.gravity.y = 20;
+
+} 
+*/
        // The player and its settings
     player = null;
     player = gameRef.add.sprite(-150, 250, 'dude');
@@ -313,8 +372,8 @@ function createGame (gameRef){
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
 
-    player.x = 150;
-    player.y = 250;
+    player.x = playerPlatform.x+playerPlatform.width/2;
+    player.y = playerPlatform.y-player.height-50;
 
     
 
@@ -326,24 +385,7 @@ function createGame (gameRef){
     // Starting stars
 
     
-    for (var i = 0; i < 12; i++)
-    {
-         switch(Math.floor(Math.random()*3)){
-            case 1:
-            var star = stars.create(i * 70,0, 'squareCheese');
-            break;
-            case 2: 
-            var star = stars.create(i * 70,0, 'circleCheese');
-            break;
-            default:
-            var star = stars.create(i * 70,0, 'triangleCheese');
 
-        }
-        star.body.gravity.y = 6;
-        star.width = starWidth;
-        star.height = starHeight;
-      //  star.body.bounce.y = 0.7 + Math.random() * 0.2;
-    }
 
     
 
@@ -472,7 +514,7 @@ if(showRestart){
     }
     }
 }
-  
+  /**
     //shows highscore message
 if(showHighScore&&brokeHighScore){
     console.log("showHighscore!");
@@ -482,7 +524,7 @@ if(showHighScore&&brokeHighScore){
     //play animation kill on complete
     highscoreImage.animations.play('highscoreshow', 20, false, true);
 }
-
+*/
 
 
 
@@ -525,8 +567,12 @@ if(showHighScore&&brokeHighScore){
     //platform making
     if(!showRestart){
     if(this.time.now>platformTimer){
-   
+    
     platformTimer = this.time.now + platformTime/speedModifier;
+    
+
+      //var nPlatforms = Math.floor(Math.random()*2)+1;
+      //for(var j=0; j<nPlatforms; j++){
     if(Math.random()*10<2&&!wasDropPlatform){
     wasDropPlatform = true;
     newPlatform(player, dropPlatforms, "dropPlatform", gameRef); 
@@ -540,6 +586,7 @@ if(showHighScore&&brokeHighScore){
     wasLiftPlatform = false;
     newPlatform(player, platforms, "plate", gameRef); 
     }
+//}
     /**
     switch (Math.floor(Math.random()*3.99)){
    case 0: newPlatform(player, acceleratePlatforms, "accelerate", gameRef);
